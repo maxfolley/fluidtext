@@ -11,9 +11,9 @@ Usage
      * Second parameter is optional, if true it will redraw the text on the function call
      * otherwise it waits for the window to be resized
      */
-    $("p").fluidText(4);
+    $("p").fluidText({pct: 4});
 
 To adjust the percantage (usefol if you're doing responsive):
 
 
-    $("p").fluidTextSetPct(6);
+    $("p").fluidText("setPercent", {pct: 6});

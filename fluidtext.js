@@ -1,40 +1,66 @@
-(function($, window) {
+(function ($, window) {
+    "use strict";
     var els = $([]),
         numEls = 0;
     function redraw() {
-        var el, elData; 
+        var el, fluidData; 
         els.each(function () {
             el = $(this);
-            elData = el.data("elData");
-            el.css("font-size", elData.parent.width() * elData.fontPct);
+            fluidData = el.data("fluidData");
+            el.css("font-size", fluidData.parent.width() * fluidData.fontPct);
         });
     }
-    $.fn.fluidText = function (pct, forceRedraw) {
-        var elData = {
-            parent: this.parent(),
-            fontPct: pct/100
-        }
-        this.data("elData", elData);
-        els = els.add(this);
+    var methods = {
+        init: function () {
+            return this.each(function (options) {
+                var $this = $(this),
+                    opts = {
+                        forceRedraw: false,
+                        pct: 10
+                    },
+                    fluidData;
+                $.extend(opts, options);
+                fluidData  = {
+                    parent: $this.parent(),
+                    fontPct: opts.pct / 100
+                }
+                $this.data("fluidData", fluidData);
+                els = els.add($this);
 
-        if (typeof forceRedraw !== "undefined" && forceRedraw === true) {
-            redraw();
+                if (opts.forceRedraw === true) {
+                    redraw();
+                }
+            });
+        },
+        setPercent: function (options) {
+            return this.each(function () {
+                var $this = $(this), 
+                    fluidData = $this.data("fluidData"),
+                    opts = {
+                        forceRedraw: false;
+                        pct: 10
+                    };
+                if (typeof fluidData === "undefined") {
+                    return;
+                }
+                $.extend(opts, options);
+                fluidData.fontPct = opts.pct / 100;
+                $this.data("fluidData", fluidData);
+
+                if (opts.forceRedraw === true) {
+                    redraw();
+                }
+            });
         }
-        return this;
     };
-    // Adjust the percentage 
-    $.fn.fluidTextSetPct = function (pct, forceRedraw) {
-        var elData = this.data("elData");
-        if (typeof elData === "undefined") {
-            return;
+    $.fn.fluidText = function (method) {
+        if (methods[method]) {
+            return methods[method].apply(this, Array.prototype.slice.call(arguments, 1));
+        } else if (typeof method === "object" || !method) {
+            return methods.init.apply(this, arguments);
+        } else {
+            $.error('Method ' + method + ' does not exist on jQuery.spriter');
         }
-        elData.fontPct = pct/100;
-        this.data("elData", elData);
-
-        if (typeof forceRedraw !== "undefined" && forceRedraw === true) {
-            redraw();
-        }
-        return this;
-    }
+    };
     $(window).resize(redraw);
-})(jQuery, window);
+}(jQuery, window));
