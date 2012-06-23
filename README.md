@@ -7,12 +7,8 @@ Usage
 -----
 
     /*
-     * If forceRedraw is true, it will redraw the text on the function call
-     * otherwise it waits for the window to be resized
+     * initSize - initial font size 
+     * initWidth - initial width of parent element
+     * When resized, the font size will be calulated using the difference between the elements  current width and the passed initWidth value
      */
-    $("p").fluidText({pct: 4, foceRedraw: true});
-
-To adjust the percantage (usefol if you're doing responsive):
-
-
-    $("p").fluidText("setPercent", {pct: 6});
+    $("p").fluidText({initSize: 14, initWidth: 300});

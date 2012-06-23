@@ -3,42 +3,20 @@
     var els = $([]),
         numEls = 0,
         methods = {
-            init: function () {
-                return this.each(function (options) {
+            init: function (options) {
+                return this.each(function () {
                     var $this = $(this),
                         opts = {
-                            forceRedraw: false,
-                            pct: 10
+                            forceRedraw: false
                         },
                         fluidData;
                     $.extend(opts, options);
                     fluidData  = {
-                        parent: $this.parent(),
-                        fontPct: opts.pct / 100
+                        initSize: opts.initSize || parseInt($this.css("font-size")),
+                        initWidth: opts.initWidth || $this.parent.width()
                     };
                     $this.data("fluidData", fluidData);
                     els = els.add($this);
-
-                    if (opts.forceRedraw === true) {
-                        redraw();
-                    }
-                });
-            },
-            setPercent: function (options) {
-                return this.each(function () {
-                    var $this = $(this),
-                        fluidData = $this.data("fluidData"),
-                        opts = {
-                            forceRedraw: false,
-                            pct: 10
-                        };
-                    if (typeof fluidData === "undefined") {
-                        return;
-                    }
-                    $.extend(opts, options);
-                    fluidData.fontPct = opts.pct / 100;
-                    $this.data("fluidData", fluidData);
-
                     if (opts.forceRedraw === true) {
                         redraw();
                     }
@@ -46,11 +24,21 @@
             }
         };
     function redraw() {
-        var el, fluidData;
+        var wDiff = 0,
+            el, fluidData, fSize, parentW, $parent, $this;
         els.each(function () {
-            el = $(this);
-            fluidData = el.data("fluidData");
-            el.css("font-size", fluidData.parent.width() * fluidData.fontPct);
+            $this = $(this);
+            $parent = $this.parent()
+            if (typeof $parent === "undefined") {
+                return;
+            }
+
+            fSize = $this.css("font-size");
+            parentW = $parent.width();
+            fluidData = $this.data("fluidData");
+            wDiff = fluidData.initWidth - parentW;
+            fSize = fluidData.initSize - (fluidData.initSize/fluidData.initWidth) * wDiff;
+            $this.css("font-size", fSize);
         });
     }
     $.fn.fluidText = function (method) {
